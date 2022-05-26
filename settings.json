@@ -1,0 +1,13 @@
+{
+    "accessToken": null,
+    "cli": {
+        "navigationStyle": "[>]"
+    },
+    "log": {
+        "style": {
+            "middle": "ツ",
+            "left": "❮",
+            "right": "❯"
+        }
+    }
+}
