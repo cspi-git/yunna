@@ -61,10 +61,14 @@
     }
 
     Yunna.checkVersion = async function(){
-        var versions = await axios("http://167.172.85.80/api/projects")
-        versions = _.find(versions.data.data, { name: "Yunna" }).versions
-        
-        for( const version of versions ) if(Yunna.version < version) log("w", `New version detected. Please check https://github.com/OTAKKATO/Yunna\n`)
+        try{
+            var versions = await axios("http://167.172.85.80/api/free/projects")
+            versions = _.find(versions.data.data, { name: "Yunna" }).versions
+            
+            for( const version of versions ) if(Yunna.version < version) log("w", `New version detected. Please check https://github.com/OTAKKATO/Yunna\n`)
+        }catch{
+            log("e", "Unable to check Yunna versions.")
+        }
 
         Yunna.navigation()
     }
