@@ -62,7 +62,7 @@
 
     Yunna.checkVersion = async function(){
         try{
-            var versions = await axios("http://167.172.85.80/api/free/projects")
+            var versions = await axios("http://167.172.85.80/api/projects")
             versions = _.find(versions.data.data, { name: "Yunna" }).versions
             
             for( const version of versions ) if(Yunna.version < version) log("w", `New version detected. Please check https://github.com/OTAKKATO/Yunna\n`)
@@ -168,6 +168,7 @@ Locale: ${response.locale}
                 if(_.find(pluginArgs, { required: true }) || !args){
                     const requiredArgs = pluginArgs.filter((arg) => arg.required)
                     const passed = []
+
                     args = minimist(shellQuote.parse(args))
 
                     for( const arg of requiredArgs ) if(args.hasOwnProperty(arg.name)){
@@ -179,11 +180,7 @@ Locale: ${response.locale}
                         passed.push(arg.name)
                     }
 
-                    if(!passed.length){
-                        await plugin.run(args)
-                    }else{
-                        Yunna.log("e", `Please use this required arguments. ${passed.join(", ")}`)
-                    }
+                    !passed.length ? await plugin.run(args) : Yunna.log("e", `Please use this required arguments. ${passed.join(", ")}`)
                 }else{
                     Yunna.log("i", "Arguments are needed for this plugin.")
                     Yunna.log("i", "usage: run <args>")
@@ -235,8 +232,7 @@ Locale: ${response.locale}
                 plugin = require(plugin.pluginPath)
                 plugin = new plugin(Yunna.log, YunnaModule, Yunna.dependencies, Yunna.accessToken)
 
-                Yunna.pluginNavigation(plugin)
-                return
+                return Yunna.pluginNavigation(plugin)
             }else{
                 Yunna.log("e", "Invalid pluginCode.")
             }
@@ -326,10 +322,6 @@ Authors: ${pluginInfo.authors.join(", ")}
             Yunna.banner()
         }, 1000)
     }catch(err){
-        if(err.toString().indexOf("Request failed with status") !== -1){
-            Yunna.log("e", "Invalid access token.")
-        }else{
-            Yunna.log("e", `Unknown error detected: ${err}`)
-        }
+        err.toString().indexOf("Request failed with status") !== -1 ? Yunna.log("e", "Invalid access token.") : Yunna.log("e", `Unknown error detected: ${err}`)
     }
 })()
