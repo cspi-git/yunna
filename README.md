@@ -84,4 +84,4 @@ yunna/gat[>] exit
 ```
 
 ## License
-MIT © OTAK
+MIT © Hanaui
