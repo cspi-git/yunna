@@ -28,7 +28,7 @@
             return `./plugins/${plugin}`
         }),
         pluginWithFullInfo: [],
-        version: "1.0.0",
+        version: "1.0.1",
         accessToken: null || settings.accessToken,
         dependencies: {
             _,
@@ -62,12 +62,13 @@
 
     Yunna.checkVersion = async function(){
         try{
-            var versions = await axios("http://167.172.85.80/api/projects")
-            versions = _.find(versions.data.data, { name: "Yunna" }).versions
+            var versions = await axios("https://hanaui.vercel.app/api/github/repos/info")
+            versions = _.find(versions.data, { name: "Yunna" }).versions
             
-            for( const version of versions ) if(Yunna.version < version) log("w", `New version detected. Please check https://github.com/OTAKKATO/Yunna\n`)
-        }catch{
-            log("e", "Unable to check Yunna versions.")
+            for( const version of versions ) if(Yunna.version < version) Yunna.log("w", "New version detected. Please check https://github.com/hanaui-git/yunna\n")
+        }catch(err){
+            console.log(err)
+            Yunna.log("e", "Unable to check Yunna versions.\n")
         }
 
         Yunna.navigation()
@@ -142,10 +143,9 @@ Locale: ${response.locale}
             }
 
             try{
-                var response = await axios(`https://graph.facebook.com/me?access_token=${accessToken}`)
-                response = response.data
+                const response = await axios(`https://graph.facebook.com/me?access_token=${accessToken}`)
 
-                if(!response.hasOwnProperty("id")){
+                if(!response.data.hasOwnProperty("id")){
                     Yunna.log("e", "Invalid access token.")
                     return Yunna.callbackFaline(plugin, callback)
                 }
