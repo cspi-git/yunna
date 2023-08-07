@@ -4,7 +4,7 @@ Your lovely extensible framework to interact with Facebook API.
 ## Installation
 Github:
 ```
-git clone https://github.com/OTAKKATO/Yunna
+git clone https://github.com/cspi-git/yunna
 ```
 
 NpmJS:
@@ -34,8 +34,8 @@ General Commands
     Command                     Description
     -------                     -----------
     help                        Show this.
-    whoami                      Current Facebook account(Access token) information.
-    set                         Set your Discord account access token for all plugins(Except: getAccessToken) in Yunna, this is a must.
+    whoami                      Current Facebook account (Access token) information.
+    set                         Set your Discord account access token for all plugins (Except: getAccessToken) in Yunna, this is a must.
     use                         Use the specified plugin.
     plugins                     Show the loaded plugins.
     version                     Show this current Yunna version.
@@ -84,4 +84,4 @@ yunna/gat[>] exit
 ```
 
 ## License
-MIT © Hanaui
+MIT © CSPI

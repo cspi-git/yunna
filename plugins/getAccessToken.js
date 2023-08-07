@@ -1,11 +1,11 @@
 "use strict";
 
 // Main
-class Plugin {
-    constructor(log, yunna, dependencies){
+class plugin {
+    constructor(log, yunna, d){
         this.log = log
         this.yunna = yunna
-        this.dependencies = dependencies
+        this.d = d
     }
 
     info(){
@@ -42,10 +42,10 @@ class Plugin {
     }
 
     run(args){
-        const queryString = this.dependencies.queryString
-        const axios = this.dependencies.axios
-        const uuid = this.dependencies.uuid
-        const _ = this.dependencies._
+        const queryString = this.d.queryString
+        const axios = this.d.axios
+        const uuid = this.d.uuid
+        const _ = this.d._
         const Yunna = this.yunna
 
         return new Promise(async(resolve)=>{
@@ -79,8 +79,7 @@ class Plugin {
 
             formData.sig = this.getSig(Yunna.sortObject(formData))
 
-
-            var response = await axios({
+            const response = await axios({
                 url: "https://b-api.facebook.com/method/auth.login",
                 method: "post",
                 data: formData,
@@ -107,4 +106,4 @@ class Plugin {
     }
 }
 
-module.exports = Plugin
+module.exports = plugin

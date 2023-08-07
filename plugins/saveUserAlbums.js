@@ -1,11 +1,11 @@
 "use strict";
 
 // Main
-class Plugin {
-    constructor(log, yunna, dependencies, accessToken){
+class plugin {
+    constructor(log, yunna, d, accessToken){
         this.log = log
         this.yunna = yunna
-        this.dependencies = dependencies
+        this.d = d
         this.accessToken = accessToken
     }
 
@@ -31,8 +31,8 @@ class Plugin {
     }
 
     run(args){
-        const axios = this.dependencies.axios
-        const fs = this.dependencies.fs
+        const axios = this.d.axios
+        const fs = this.d.fs
         const log = this.log
 
         return new Promise((resolve)=>{
@@ -57,15 +57,9 @@ class Plugin {
                         return resolve()
                     }
 
-                    for( const post of response.data ){
-                        if(albums.indexOf(post) === -1) albums.push(post)
-                    }
+                    for( const post of response.data ) if(albums.indexOf(post) === -1) albums.push(post)
 
-                    if(response.paging.hasOwnProperty("next")){
-                        getAlbums(response.paging.next, accessToken)
-                    }else{
-                        done()
-                    }
+                    response.paging.hasOwnProperty("next") ? getAlbums(response.paging.next, accessToken) : done()
                 }catch{
                     done()
                 }
@@ -77,4 +71,4 @@ class Plugin {
     }
 }
 
-module.exports = Plugin
+module.exports = plugin

@@ -21,7 +21,7 @@
     // Variables
     const settings = require("./settings.json")
 
-    var Yunna = {
+    var yunna = {
         plugins: fs.readdirSync(path.join(__dirname, "plugins")).filter((plugin)=>{
             return plugin.indexOf("_") === -1
         }).map((plugin)=>{
@@ -30,7 +30,7 @@
         pluginWithFullInfo: [],
         version: "1.0.1",
         accessToken: null || settings.accessToken,
-        dependencies: {
+        d: {
             _,
             uuid,
             queryString,
@@ -43,7 +43,7 @@
     }
 
     // Functions
-    Yunna.log = function(type, message){
+    yunna.log = function(type, message){
         if(type === "i"){
             console.log(`${chalk.gray(settings.log.style.left) + chalk.blueBright(settings.log.style.middle) + chalk.gray(settings.log.style.right)} ${message}`)
         }else if(type === "w"){
@@ -55,34 +55,30 @@
         }
     }
 
-    Yunna.banner = function(){
+    yunna.banner = function(){
         YunnaModule.banner()
-        Yunna.checkVersion()
+        yunna.checkVersion()
     }
 
-    Yunna.checkVersion = async function(){
+    yunna.checkVersion = async function(){
         try{
-            var versions = await axios("https://hanaui.vercel.app/api/github/repos/info")
+            var versions = await axios("https://cspi-pa1.vercel.app/github/repos/info")
             versions = _.find(versions.data, { name: "Yunna" }).versions
             
-            for( const version of versions ) if(Yunna.version < version) Yunna.log("w", "New version detected. Please check https://github.com/hanaui-git/yunna\n")
+            for( const version of versions ) if(yunna.version < version) yunna.log("w", "New version detected. Please check https://github.com/cspi-git/yunna\n")
         }catch(err){
             console.log(err)
-            Yunna.log("e", "Unable to check Yunna versions.\n")
+            yunna.log("e", "Unable to check Yunna versions.\n")
         }
 
-        Yunna.navigation()
+        yunna.navigation()
     }
 
-    Yunna.callbackFaline = function(plugin, callback){
-        if(plugin){
-            callback(plugin)
-        }else{
-            callback()
-        }
+    yunna.callbackFaline = function(plugin, callback){
+        plugin ? callback(plugin) : callback()
     }
 
-    Yunna.faline = async function(plugin, command, commandArgs, callback){
+    yunna.faline = async function(plugin, command, commandArgs, callback){
         var pluginInfo;
 
         if(plugin) pluginInfo = plugin.info()
@@ -99,12 +95,12 @@ General Commands
     Command                     Description
     -------                     -----------
     help                        Show this.
-    whoami                      Current Facebook account(Access token) information.
-    set                         Set your Discord account access token for all plugins(Except: getAccessToken) in Yunna, this is a must.
+    whoami                      Current Facebook account (Access token) information.
+    set                         Set your Discord account access token for all plugins (Except: getAccessToken) in Yunna, this is a must.
     use                         Use the specified plugin.
     plugins                     Show the loaded plugins.
     version                     Show this current Yunna version.
-    exit                        Exit Yunna.
+    exit                        Exit yunna.
 
 Plugin Commands
 ===============
@@ -115,12 +111,12 @@ Plugin Commands
     info                        Show plugin information.
             `)
         }else if(command === "whoami"){
-            if(!Yunna.accessToken){
-                Yunna.log("c", "Please set a Facebook account access token in Yunna.")
-                return Yunna.callbackFaline(plugin, callback)
+            if(!yunna.accessToken){
+                yunna.log("c", "Please set a Facebook account access token in yunna.")
+                return yunna.callbackFaline(plugin, callback)
             }
 
-            var response = await axios(`https://graph.facebook.com/me?access_token=${Yunna.accessToken}`)
+            var response = await axios(`https://graph.facebook.com/me?access_token=${yunna.accessToken}`)
             response = response.data
             
             console.log(`
@@ -138,27 +134,27 @@ Locale: ${response.locale}
             const accessToken = commandArgs[1]
 
             if(!accessToken){
-                Yunna.log("i", "usage: set <accessToken>")
-                return Yunna.callbackFaline(plugin, callback)
+                yunna.log("i", "usage: set <accessToken>")
+                return yunna.callbackFaline(plugin, callback)
             }
 
             try{
                 const response = await axios(`https://graph.facebook.com/me?access_token=${accessToken}`)
 
                 if(!response.data.hasOwnProperty("id")){
-                    Yunna.log("e", "Invalid access token.")
-                    return Yunna.callbackFaline(plugin, callback)
+                    yunna.log("e", "Invalid access token.")
+                    return yunna.callbackFaline(plugin, callback)
                 }
 
-                Yunna.accessToken = accessToken
-                Yunna.log("i", "Access token successfully set.")
+                yunna.accessToken = accessToken
+                yunna.log("i", "Access token successfully set.")
             }catch{
-                Yunna.log("e", "Invalid access token.")
+                yunna.log("e", "Invalid access token.")
             }
         }else if(commandArgs[0] === "run" && plugin){
-            if(pluginInfo.name !== "Get Access Token" && !Yunna.accessToken){
-                Yunna.log("c", "Please set a Facebook account access token in Yunna.")
-                return Yunna.callbackFaline(plugin, callback)
+            if(pluginInfo.name !== "Get Access Token" && !yunna.accessToken){
+                yunna.log("c", "Please set a Facebook account access token in yunna.")
+                return yunna.callbackFaline(plugin, callback)
             }
 
             const pluginArgs = pluginInfo.hasOwnProperty("args") ? pluginInfo.args : null
@@ -173,17 +169,17 @@ Locale: ${response.locale}
 
                     for( const arg of requiredArgs ) if(args.hasOwnProperty(arg.name)){
                         if(!args.empty && args[arg.name] === true){
-                            Yunna.log("e", `${arg.name} argument is empty, make sure It's not empty.`)
+                            yunna.log("e", `${arg.name} argument is empty, make sure It's not empty.`)
                             passed.push(arg.name)
                         }
                     }else{
                         passed.push(arg.name)
                     }
 
-                    !passed.length ? await plugin.run(args) : Yunna.log("e", `Please use this required arguments. ${passed.join(", ")}`)
+                    !passed.length ? await plugin.run(args) : yunna.log("e", `Please use this required arguments. ${passed.join(", ")}`)
                 }else{
-                    Yunna.log("i", "Arguments are needed for this plugin.")
-                    Yunna.log("i", "usage: run <args>")
+                    yunna.log("i", "Arguments are needed for this plugin.")
+                    yunna.log("i", "usage: run <args>")
                 }
             }else{
                 await plugin.run(null)
@@ -216,28 +212,28 @@ Locale: ${response.locale}
                 }))
                 console.log()
             }else{
-                Yunna.log("e", "This plugin does not have any arguments.")
+                yunna.log("e", "This plugin does not have any arguments.")
             }
         }else if(commandArgs[0] === "use"){
             const pluginCode = commandArgs[1]
 
             if(!commandArgs[1]){
-                Yunna.log("i", "usage: use <pluginCode>")
-                return Yunna.callbackFaline(plugin, callback)
+                yunna.log("i", "usage: use <pluginCode>")
+                return yunna.callbackFaline(plugin, callback)
             }
 
-            plugin = _.find(Yunna.pluginWithFullInfo, { code: pluginCode })
+            plugin = _.find(yunna.pluginWithFullInfo, { code: pluginCode })
 
             if(plugin){
                 plugin = require(plugin.pluginPath)
-                plugin = new plugin(Yunna.log, YunnaModule, Yunna.dependencies, Yunna.accessToken)
+                plugin = new plugin(yunna.log, YunnaModule, yunna.dependencies, yunna.accessToken)
 
-                return Yunna.pluginNavigation(plugin)
+                return yunna.pluginNavigation(plugin)
             }else{
-                Yunna.log("e", "Invalid pluginCode.")
+                yunna.log("e", "Invalid pluginCode.")
             }
 
-            return Yunna.callbackFaline(plugin, callback)
+            return yunna.callbackFaline(plugin, callback)
         }else if(command === "info" && plugin){
             console.log(`
 Name: ${pluginInfo.name}
@@ -247,7 +243,7 @@ Authors: ${pluginInfo.authors.join(", ")}
             `)
         }else if(command === "plugins"){
             console.log("")
-            console.log(columnify(Yunna.pluginWithFullInfo, {
+            console.log(columnify(yunna.pluginWithFullInfo, {
                 columns: ["name", "code", "authors", "description"],
                 minWidth: 20,
                 config: {
@@ -275,53 +271,50 @@ Authors: ${pluginInfo.authors.join(", ")}
             }))
             console.log("")
         }else if(command === "version"){
-            Yunna.log("i", `Your Yunna current version is ${Yunna.version}`)
+            yunna.log("i", `Your Yunna current version is ${yunna.version}`)
         }else if(command === "exit"){
             process.exit()
         }else{
-            Yunna.log("e", "Unrecognized command.")
+            yunna.log("e", "Unrecognized command.")
         }
 
-        Yunna.callbackFaline(plugin, callback)
+        yunna.callbackFaline(plugin, callback)
     }
 
-    Yunna.pluginNavigation = function(plugin){
+    yunna.pluginNavigation = function(plugin){
         const command = readLine.question(`yunna/${plugin.info().code}${settings.cli.navigationStyle} `)
         const commandArgs = command.split(" ")
-
-        Yunna.faline(plugin, command, commandArgs, Yunna.pluginNavigation)
+        yunna.faline(plugin, command, commandArgs, yunna.pluginNavigation)
     }
 
-    Yunna.navigation = function(){
+    yunna.navigation = function(){
         const command = readLine.question(`yunna${settings.cli.navigationStyle} `)
         const commandArgs = command.split(" ")
-
-        Yunna.faline(null, command, commandArgs, Yunna.navigation)
+        yunna.faline(null, command, commandArgs, yunna.navigation)
     }
 
     // Main
-    Yunna.log("i", "Checking access token from settings.")
+    yunna.log("i", "Checking access token from settings.")
     try{
-        if(Yunna.accessToken) await axios(`https://graph.facebook.com/me?access_token=${Yunna.accessToken}`)
+        if(yunna.accessToken) await axios(`https://graph.facebook.com/me?access_token=${yunna.accessToken}`)
 
         console.clear()
-        Yunna.log("i", "Loading plugins, please wait.")
+        yunna.log("i", "Loading plugins, please wait.")
     
-        for( var plugin of Yunna.plugins ){
+        for( var plugin of yunna.plugins ){
             const pluginPath = plugin
     
             plugin = require(plugin)
             plugin = new plugin().info()
             plugin.pluginPath = pluginPath
-            
-            Yunna.pluginWithFullInfo.push(plugin) 
+            yunna.pluginWithFullInfo.push(plugin) 
         }
     
         setTimeout(function(){
             console.clear()
-            Yunna.banner()
+            yunna.banner()
         }, 1000)
     }catch(err){
-        err.toString().indexOf("Request failed with status") !== -1 ? Yunna.log("e", "Invalid access token.") : Yunna.log("e", `Unknown error detected: ${err}`)
+        err.toString().indexOf("Request failed with status") !== -1 ? yunna.log("e", "Invalid access token.") : yunna.log("e", `Unknown error detected: ${err}`)
     }
 })()

@@ -1,11 +1,11 @@
 "use strict";
 
 // Main
-class Plugin {
-    constructor(log, yunna, dependencies, accessToken){
+class plugin {
+    constructor(log, yunna, d, accessToken){
         this.log = log
         this.yunna = yunna
-        this.dependencies = dependencies
+        this.d = d
         this.accessToken = accessToken
     }
 
@@ -31,9 +31,9 @@ class Plugin {
     }
 
     run(args){
-        const fileDownloader = this.dependencies.fileDownloader
-        const runJobs = this.dependencies.runJobs
-        const axios = this.dependencies.axios
+        const fileDownloader = this.d.fileDownloader
+        const runJobs = this.d.runJobs
+        const axios = this.d.axios
         const log = this.log
             
         return new Promise((resolve)=>{
@@ -52,7 +52,6 @@ class Plugin {
 
                         try{
                             await downloader.download()
-
                             log("i", `Successfully downloaded: ${photo}`)
                         }catch{
                             log("w", `Unable to download: ${photo}`)
@@ -75,11 +74,7 @@ class Plugin {
                         if(photos.indexOf(photo) === -1) photos.push(photo)
                     }
 
-                    if(response.paging.hasOwnProperty("next")){
-                        getPhotos(response.paging.next, accessToken)
-                    }else{
-                        done()
-                    }
+                    response.paging.hasOwnProperty("next") ? getPhotos(response.paging.next, accessToken) : done()
                 }catch{
                     done()
                 }
@@ -91,4 +86,4 @@ class Plugin {
     }
 }
 
-module.exports = Plugin
+module.exports = plugin
