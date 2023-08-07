@@ -1,11 +1,11 @@
 "use strict";
 
 // Main
-class Plugin {
-    constructor(log, yunna, dependencies, accessToken){
+class plugin {
+    constructor(log, yunna, d, accessToken){
         this.log = log
         this.yunna = yunna
-        this.dependencies = dependencies
+        this.d = d
         this.accessToken = accessToken
     }
 
@@ -26,8 +26,8 @@ class Plugin {
     }
 
     run(args){
-        const prettyJSON = this.dependencies.prettyJSON
-        const axios = this.dependencies.axios
+        const prettyJSON = this.d.prettyJSON
+        const axios = this.d.axios
             
         return new Promise(async(resolve)=>{
             var response = await axios(`https://graph.facebook.com/${args.id}?access_token=${this.accessToken}`)
@@ -43,4 +43,4 @@ class Plugin {
     }
 }
 
-module.exports = Plugin
+module.exports = plugin

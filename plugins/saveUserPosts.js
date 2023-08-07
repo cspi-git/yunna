@@ -1,11 +1,11 @@
 "use strict";
 
 // Main
-class Plugin {
-    constructor(log, yunna, dependencies, accessToken){
+class plugin {
+    constructor(log, yunna, d, accessToken){
         this.log = log
         this.yunna = yunna
-        this.dependencies = dependencies
+        this.d = d
         this.accessToken = accessToken
     }
 
@@ -31,8 +31,8 @@ class Plugin {
     }
 
     run(args){
-        const axios = this.dependencies.axios
-        const fs = this.dependencies.fs
+        const axios = this.d.axios
+        const fs = this.d.fs
         const log = this.log
 
         return new Promise((resolve)=>{
@@ -40,9 +40,7 @@ class Plugin {
 
             async function done(){
                 log("i", `${posts.length} posts found. Saving, please wait.`)
-                
                 fs.writeFileSync(args.output, JSON.stringify(posts, null, 2), "utf8")
-                
                 log("i", "Finished.")
                 resolve()
             }
@@ -57,15 +55,9 @@ class Plugin {
                         return resolve()
                     }
 
-                    for( const post of response.data ){
-                        if(posts.indexOf(post) === -1) posts.push(post)
-                    }
+                    for( const post of response.data ) if(posts.indexOf(post) === -1) posts.push(post)
 
-                    if(response.paging.hasOwnProperty("next")){
-                        getPosts(response.paging.next, accessToken)
-                    }else{
-                        done()
-                    }
+                    response.paging.hasOwnProperty("next") ? getPosts(response.paging.next, accessToken) : done()
                 }catch{
                     done()
                 }
@@ -77,4 +69,4 @@ class Plugin {
     }
 }
 
-module.exports = Plugin
+module.exports = plugin

@@ -6,10 +6,10 @@ const crypto = require("crypto")
 const chalk = require("chalk")
 
 // Variables
-var Yunna = {}
+var yunna = {}
 
 // Functions
-Yunna.heartBanner = function(){
+yunna.heartBanner = function(){
     console.log(chalk.redBright(`
                 ,ae,
             ,88888e
@@ -25,36 +25,34 @@ Yunna.heartBanner = function(){
 }
 
 // Main
-Yunna.banner = function(){
-    const banners = [Yunna.heartBanner]
+yunna.banner = function(){
+    const banners = [yunna.heartBanner]
 
     banners[Math.floor(Math.random() * banners.length)]()
 }
 
-Yunna.sortObject = function(object){
+yunna.sortObject = function(object){
     const keys = Object.keys(object).sort()
     var sortedObject = {}
 
-    for( const obj in keys ){
-      sortedObject[keys[obj]] = object[keys[obj]]
-    }
+    for( const obj in keys ) sortedObject[keys[obj]] = object[keys[obj]]
 
     return sortedObject
 }
 
-Yunna.md5 = function(string){
+yunna.md5 = function(string){
     return crypto.createHash("md5").update(string).digest("hex")
 }
 
-Yunna.randNumberBetween = function(min, max){
+yunna.randNumberBetween = function(min, max){
     return Math.floor(Math.random() * (max - min + 1) + min)
 }
 
-Yunna.randString = function(limit){
+yunna.randString = function(limit){
     return randomString.generate({
       charset: "abcdefghijklmnopqrstuvwxyz",
       length: limit
     })
 }
 
-module.exports = Yunna
+module.exports = yunna
